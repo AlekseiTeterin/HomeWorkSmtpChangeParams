@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+      <UserSecretsId>262ecc3c-7e13-4832-be7d-b1e4fe8c0c83</UserSecretsId>
+  </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MailKit" Version="3.4.1" />
+      <PackageReference Include="Polly" Version="7.2.3" />
+    </ItemGroup>
+
+</Project>
