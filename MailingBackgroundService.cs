@@ -1,7 +1,5 @@
 ﻿using Polly;
 using Polly.Retry;
-using System;
-using System.Linq.Expressions;
 
 namespace WebApplicationMail;
 
@@ -35,15 +33,13 @@ public class MailingBackgroundService : BackgroundService
             AsyncRetryPolicy? policy = Policy.Handle<Exception>()
                 .WaitAndRetryAsync(retryCount, retryAttempt => 
                 TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                (exception, timeSpan, retryCount, context)=>
+                (exception, timeSpan, retryAttempt, context)=>
                 //.RetryAsync(retryCount, onRetry: (exception, retryAttempt) =>
                {
                    _logger.LogWarning(
                     exception, 
-                    "При попытке отправить письмо произошла ошибка, сервис: {Service}, {Recipient}" +
-                    "Попытка #{retryAttempt}",
-                    mailSender.GetType(),
-                    to
+                    "При попытке отправить письмо произошла ошибка, Попытка #{retryAttempt}",
+                    retryAttempt
                     );
                });
 
@@ -54,40 +50,7 @@ public class MailingBackgroundService : BackgroundService
             {
                 _logger.LogError(result.FinalException, "Произошла ошибка при попытке отправки письма");
             }
-            await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
-
-
-
-
-            /*bool sendingSucceeded = false;
-            const int attemptsLimit = 10;
-            for(var attemptsCount = 1; !sendingSucceeded && attemptsCount <= attemptsLimit && !stoppingToken.IsCancellationRequested; attemptsCount++ )
-            {
-                try
-                {
-                    await mailSender.SendAsync("Родион", to, "Привет", "Все хорошо");
-                    sendingSucceeded = true;
-                }
-                catch (Exception e) when (attemptsCount < attemptsLimit)
-                {
-                    _logger.LogWarning(e,
-                    "При попытке отправить письмо произошла ошибка, сервис: {Service}, {Recipient}" +
-                    "Попытка #{Attempt}",
-                    mailSender.GetType(),
-                    to,
-                    attemptsCount
-                    );
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e,
-                    "При попытке отправить письмо произошла ошибка, сервис: {Service}, {Recipient}",
-                    mailSender.GetType(),
-                    to
-                    );
-                }
-                await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
-            }*/
+            await Task.Delay(TimeSpan.FromSeconds(20), stoppingToken);
 
         }
     }
